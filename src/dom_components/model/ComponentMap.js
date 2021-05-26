@@ -8,9 +8,9 @@ export default Component.extend(
       type: 'map',
       src: '',
       void: 0,
-      mapUrl: 'https://maps.google.com/maps',
+      mapUrl: 'https://www.google.com/maps/embed/v1/place',
       tagName: 'iframe',
-      mapType: 'q',
+      mapType: 'mapType',
       address: '',
       zoom: '1',
       attributes: { frameborder: 0 },
@@ -28,8 +28,8 @@ export default Component.extend(
           name: 'mapType',
           changeProp: 1,
           options: [
-            { value: 'q', name: 'Roadmap' },
-            { value: 'w', name: 'Satellite' }
+            { value: 'roadmap', name: 'Roadmap' },
+            { value: 'satellite', name: 'Satellite' }
           ]
         },
         {
@@ -69,12 +69,13 @@ export default Component.extend(
       var zoom = md.get('zoom');
       var type = md.get('mapType');
       var size = '';
+      var gmApiKey = this.config.em.get('gmApiKey')
+        ? 'key=' + this.config.em.get('gmApiKey')
+        : '';
       addr = addr ? '&q=' + addr : '';
-      zoom = zoom ? '&z=' + zoom : '';
-      type = type ? '&t=' + type : '';
-      var result = md.get('mapUrl') + '?' + addr + zoom + type;
-      result += '&output=embed';
-      return result;
+      zoom = zoom ? '&zoom=' + zoom : '';
+      type = type ? '&maptype=' + type : '';
+      return md.get('mapUrl') + '?' + gmApiKey + addr + zoom + type;
     },
 
     /**
@@ -85,8 +86,8 @@ export default Component.extend(
       var uri = this.parseUri(this.get('src'));
       var qr = uri.query;
       if (qr.q) this.set('address', qr.q);
-      if (qr.z) this.set('zoom', qr.z);
-      if (qr.t) this.set('mapType', qr.t);
+      if (qr.zoom) this.set('zoom', qr.zoom);
+      if (qr.mapType) this.set('mapType', qr.mapType);
     }
   },
   {
@@ -100,7 +101,10 @@ export default Component.extend(
      */
     isComponent(el) {
       var result = '';
-      if (el.tagName == 'IFRAME' && /maps\.google\.com/.test(el.src)) {
+      if (
+        el.tagName == 'IFRAME' &&
+        /google.com\/maps\/embed\/v1\/place/.test(el.src)
+      ) {
         result = { type: 'map', src: el.src };
       }
       return result;

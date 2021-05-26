@@ -551,7 +551,8 @@ describe('Link Component', () => {
 
 describe('Map Component', () => {
   test('Component parse map iframe', () => {
-    var src = 'https://maps.google.com/maps?&q=London,UK&z=11&t=q&output=embed';
+    var src =
+      'https://www.google.com/maps/embed/v1/place?&q=London,UK&z=11&maptype=roadmap';
     var el = $('<iframe src="' + src + '"></iframe>');
     obj = ComponentMap.isComponent(el.get(0));
     expect(obj).toEqual({ type: 'map', src });
